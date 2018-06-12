@@ -1,0 +1,26 @@
+dotnet new web
+dotnet restore
+dotnet publish -o ./publish
+docker build -f Dockerfile.runtime -t asp-start .
+docker run -p 8181:80 asp-start
+
+docker build -f Dockerfile.build -t asp-start-build .
+docker image ls | sls asp-start
+docker create --name asp-start-build-container asp-start-build
+docker build -f Dockerfile.runtime -t asp-start .
+docker run -p 8181:80 asp-start
+docker ps
+docker rm $(docker stop containerIDifisrunning)
+docker stop $(docker ps --filter "ancestor=asp-start" -q)
+
+
+docker build -t asp-start .
+docker image ls | sls asp-start
+docker run -p 8181:80 asp-start
+
+
+
+docker tag asp-start cntzar/asp2.1-docker-multistage
+docker push cntzar/asp2.1-docker-multistage
+https://hub.docker.com/r/cntzar/asp2.1-docker-multistage/
+docker run -p 8182:80 cntzar/asp2.1-docker-multistage
